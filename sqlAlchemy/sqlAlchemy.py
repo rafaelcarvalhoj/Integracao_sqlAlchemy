@@ -78,7 +78,7 @@ def adicionar_cliente():
         endereco = str(input("Digite seu endereco: "))
         cliente = Cliente(nome=nome, cpf=cpf, endereco=endereco)
         adicionar_cliente_db(cliente)
-        return cliente
+        print("Cliente criado com sucesso!\n\n")
     else:
         print("CPF já cadastrado!\n\n")
         return None
@@ -109,5 +109,29 @@ def adicionar_conta_cliente(cpf):
         with Session(engine) as session:
             session.add(conta)
             session.commit()
+    else:
+        print("CPF não encontrado na base de dados")
+
+
+def imprimir_dados_clientes(cpf):
+    if existe_cpf(cpf):
+        cliente = buscar_cliente_por_cpf(cpf)
+        print("=-=-=-=-= Dados do cliente =-=-=-=-=")
+        print(f"Nome: {cliente.nome}")
+        print(f"CPF: {cliente.cpf}")
+        print(f"Endereco: {cliente.endereco}")
+        print("\n==CONTAS==")
+        contas = select(Conta).where(Conta.cliente_id == cliente.id)
+        for conta in Session(engine).scalars(contas):
+            print("\n--------------------------------")
+            print(f"Conta: {conta.agencia} - {conta.num}")
+            print(f"Saldo: {conta.saldo}")
+            print("--------------------------------")
+    else:
+        print("CPF não encontrado na base de dados")
+
+def depositar_em_conta(cpf):
+    if existe_cpf(cpf):
+        pass
     else:
         print("CPF não encontrado na base de dados")
