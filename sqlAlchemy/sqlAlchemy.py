@@ -25,14 +25,14 @@ class Cliente(Base):
     cpf = Column(String(9))
     endereco = Column(String(9))
 
-    def __repr__(self):
-        return f"Cliente(id={self.id}, name={self.name}, cpf={self.cpf}, endereco={self.endereco})"
-
-
-    #Estabelecendo relacao id_conta com id_cliente
+    # Estabelecendo relacao id_conta com id_cliente
     conta = relationship(
         "Conta", back_populates="cliente", cascade="all, delete-orphan"
     )
+
+    def __repr__(self):
+        return f"Cliente(id={self.id}, name={self.name}, cpf={self.cpf}, endereco={self.endereco})"
+
 
 class Conta(Base):
      __tablename__ = "conta"
