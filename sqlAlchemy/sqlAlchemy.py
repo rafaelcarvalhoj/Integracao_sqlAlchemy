@@ -23,7 +23,7 @@ class Cliente(Base):
     id = Column(Integer, primary_key=True)
     nome = Column(String)
     cpf = Column(String(9))
-    endereco = Column(String(9))
+    endereco = Column(String(30))
 
     # Estabelecendo relacao id_conta com id_cliente
     conta = relationship(
@@ -70,24 +70,44 @@ def existe_cpf(cpf):
 
     return False
 
-def adicionar_conta():
-    print("=-=-=-=-= Criando uma nova conta =-=-=-=-=")
+def adicionar_cliente():
+    print("=-=-=-=-= Criando um novo cliente =-=-=-=-=")
     nome = str(input("Digite seu nome: "))
     cpf = str(input("Digite seu CPF: "))
-    endereco = str(input("Digite seu endereco: "))
-    return Cliente(nome=nome, cpf=cpf, endereco=endereco)
     if not existe_cpf([cpf]):
         endereco = str(input("Digite seu endereco: "))
         cliente = Cliente(nome=nome, cpf=cpf, endereco=endereco)
-        adicionar_conta_db(cliente)
+        adicionar_cliente_db(cliente)
         return cliente
     else:
         print("CPF já cadastrado!\n\n")
         return None
 
 
-def adicionar_conta_db(cliente):
+def adicionar_cliente_db(cliente):
     with Session(engine) as session:
         session.add(cliente)
         session.commit()
         session.close()
+
+
+def buscar_cliente_por_cpf(cpf):
+    with Session(engine) as session:
+        cliente = session.query(Cliente).filter_by(cpf=cpf).first()
+    return cliente
+
+
+def adicionar_conta_cliente(cpf):
+    cliente = buscar_cliente_por_cpf(cpf)
+    if cliente:
+        print("=-=-=-=-= Criando uma nova conta =-=-=-=-=")
+        tipo = str(input("Digite o tipo de conta: "))
+        agencia = "0001"
+        num = int(input("Digite o número da conta: "))
+        saldo = 0
+        conta = Conta(tipo=tipo, agencia=agencia, num=num, saldo=saldo, cliente=cliente)
+        with Session(engine) as session:
+            session.add(conta)
+            session.commit()
+    else:
+        print("CPF não encontrado na base de dados")
